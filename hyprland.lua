@@ -25,7 +25,9 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("systemctl  --user start hyprpolkitagent")
   hl.exec_cmd("nm-applet")
 -- Since we can set this per screen, should I worry about stretching the wallpaper for larger displays on startup?
-  hl.exec_cmd("awww-daemon && awww img \"$HOME/Pictures/wallpapers/animated/shinobu-dark-butterfly-kimetsu-no-yaiba-moewalls-com.gif\"")
+  hl.exec_cmd("awww-daemon")
+  hl.exec_cmd("awww img \"$HOME/Pictures/wallpapers/animated/shinobu-dark-butterfly-kimetsu-no-yaiba-moewalls-com.gif\"")
+  hl.exec_cmd(terminal)
   hl.exec_cmd("discord")
   hl.exec_cmd("spotify-launcher")
   hl.exec_cmd("steam")
@@ -252,6 +254,8 @@ hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(screenshot))
+hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })    -- Super + LMB: Move a window by dragging more than 10px.
 -- hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 
 -- Move focus with mainMod + vim keys
