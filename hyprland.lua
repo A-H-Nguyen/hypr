@@ -1,8 +1,8 @@
 --[[ MONITORS  ]]
 
 hl.monitor({
-    output   = "DP-1",
-    mode     = "3440x1440@144",
+    output   = "eDP-1",
+    mode     = "1920x1080@60",
     position = "auto",
     scale    = 1,
 })
@@ -28,9 +28,11 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("awww-daemon")
   hl.exec_cmd("awww img \"$HOME/Pictures/wallpapers/animated/shinobu-dark-butterfly-kimetsu-no-yaiba-moewalls-com.gif\"")
   hl.exec_cmd(terminal)
+  hl.exec_cmd("firefox")
+  hl.exec_cmd("thunderbird")
   hl.exec_cmd("discord")
+  hl.exec_cmd("slack")
   hl.exec_cmd("spotify-launcher")
-  hl.exec_cmd("steam")
 end)
 
 --[[ ENVIRONMENT VARIABLES  ]]
@@ -344,7 +346,7 @@ hl.window_rule({
   name = "windowrule-5",
   workspace = "3",
   match = {
-    class = "^(thunderbird)$"
+    class = "^(org.mozilla.Thunderbird)$"
   },
 })
 
