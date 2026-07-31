@@ -3,31 +3,44 @@
 hl.monitor({
     output   = "eDP-1",
     mode     = "1920x1080@60",
+    position = "0x1200",
+    scale    = 1,
+})
+
+hl.monitor({
+    output   = "DP-3",
+    mode     = "preferred",
     position = "auto",
     scale    = 1,
 })
 
--- monitor=,preferred,auto,auto
+-- hl.monitor({
+--     output   = "DP-4",
+--     mode     = "1920x1200@59.95",
+--     position = "1920x0",
+--     scale    = 1,
+--     transform = 1,
+-- })
+
 
 --[[ MY PROGRAMS  ]]
 
 local terminal = "kitty"
 local fileManager = "thunar"
 local menu = "pidof rofi || rofi -show drun"
-local screenshot = "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date '+%y-%m-%d_%H-%M-%S').png\""
+local screenshot_slurp = "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date '+%y-%m-%d_%H-%M-%S').png\""
+local screenshot_satty = 'grim - | satty -f - --copy-command wl-copy -o "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png"'
 
 --[[ AUTOSTART  ]]
 
-hl.on("hyprland.start", function () 
+hl.on("hyprland.start", function ()
   hl.exec_cmd("waybar")
   hl.exec_cmd("dunst")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("systemctl  --user start hyprpolkitagent")
   hl.exec_cmd("nm-applet")
--- Since we can set this per screen, should I worry about stretching the wallpaper for larger displays on startup?
-  hl.exec_cmd("awww-daemon")
-  hl.exec_cmd("awww img \"$HOME/Pictures/wallpapers/animated/shinobu-dark-butterfly-kimetsu-no-yaiba-moewalls-com.gif\"")
-  hl.exec_cmd(terminal)
+  hl.exec_cmd("awww-daemon && awww img \"$HOME/Pictures/wallpapers/wallpaper_1.jpg\"")
+  hl.exec_cmd(terminal, { workspace = "1" })
   hl.exec_cmd("firefox")
   hl.exec_cmd("thunderbird")
   hl.exec_cmd("discord")
@@ -235,36 +248,22 @@ hl.device({
 -- See https://wiki.hypr.land/Configuring/Keywords/
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
--- Example binds, see https://wiki.hypr.land/Configuring/Binds/ for more
--- bind = $mainMod, Q, exec, $terminal
--- bind = $mainMod, D, killactive,
--- bind = $mainMod, M, exit,
--- bind = $mainMod, E, exec, $fileManager
--- bind = $mainMod, V, togglefloating,
--- bind = $mainMod, R, exec, $menu
--- bind = $mainMod, S, exec, $screenshot
--- bind = $mainMod SHIFT, L, exec, hyprlock
--- bind = $mainMod, h, movefocus, l
--- bind = $mainMod, l, movefocus, r
--- bind = $mainMod, k, movefocus, u
--- bind = $mainMod, j, movefocus, d
-
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-local closeWindowBind = hl.bind(mainMod .. " + D", hl.dsp.window.close())
--- closeWindowBind:set_enabled(false)
+hl.bind(mainMod .. " + D", hl.dsp.window.close())
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(screenshot))
+hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(screenshot_slurp))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd(screenshot_satty))
+hl.bind(mainMod .. " + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })    -- Super + LMB: Move a window by dragging more than 10px.
--- hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 
 -- Move focus with mainMod + vim keys
-hl.bind(mainMod .. " + H",  hl.dsp.focus({ direction = "left" }))
+hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + L", hl.dsp.focus({ direction = "right" }))
-hl.bind(mainMod .. " + K",    hl.dsp.focus({ direction = "up" }))
-hl.bind(mainMod .. " + J",  hl.dsp.focus({ direction = "down" }))
+hl.bind(mainMod .. " + K", hl.dsp.focus({ direction = "up" }))
+hl.bind(mainMod .. " + J", hl.dsp.focus({ direction = "down" }))
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
@@ -288,11 +287,12 @@ hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
+
 -- on = CLOSING the laptop lid
--- bindl = , switch:on:Lid Switch, exec, $HOME/.my-scripts/monitors/clamshell.sh close
+hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("$HOME/.my-scripts/monitors/clamshell.sh close"), { locked = true })
 
 -- off = OPENING the laptop lid
--- bindl = , switch:off:Lid Switch, exec, $HOME/.my-scripts/monitors/clamshell.sh open
+hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("$HOME/.my-scripts/monitors/clamshell.sh open"), { locked = true })
 
 --[[ WINDOWS AND WORKSPACES  ]]
 
@@ -306,6 +306,13 @@ local suppressMaximizeRule = hl.window_rule({
 
   suppress_event = "maximize",
 })
+
+-- hl.workspace_rule({ workspace="1", monitor = "DP-3" , default = true })
+-- hl.workspace_rule({ workspace="2", monitor = "eDP-1", default = true })
+-- hl.workspace_rule({ workspace="3", monitor = "eDP-1", default = true })
+-- hl.workspace_rule({ workspace="6", monitor = "DP-4" , default = true })
+-- hl.workspace_rule({ workspace="7", monitor = "DP-4" , default = true })
+-- hl.workspace_rule({ workspace="8", monitor = "DP-4" , default = true })
 
 -- Fix some dragging issues with XWayland
 hl.window_rule({
@@ -367,7 +374,15 @@ hl.window_rule({
 })
 
 hl.window_rule({
-  name = "windowrule-8",
+  name = "slack-rule-a",
+  workspace = "7",
+  match = {
+    class = "^(slack)$"
+  },
+})
+
+hl.window_rule({
+  name = "slack-rule-b",
   workspace = "7",
   match = {
     class = "^(Slack)$"
@@ -375,9 +390,17 @@ hl.window_rule({
 })
 
 hl.window_rule({
-  name = "windowrule-9",
+  name = "spotify-rule-a",
   workspace = "8",
   match = {
     class = "^(Spotify)$"
+  },
+})
+
+hl.window_rule({
+  name = "spotify-rule-b",
+  workspace = "8",
+  match = {
+    class = "^(spotify)$"
   },
 })
