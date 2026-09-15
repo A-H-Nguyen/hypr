@@ -3,25 +3,41 @@
 hl.monitor({
     output   = "eDP-1",
     mode     = "1920x1080@60",
-    position = "0x1200",
-    scale    = 1,
-})
-
-hl.monitor({
-    output   = "DP-3",
-    mode     = "preferred",
     position = "auto",
     scale    = 1,
 })
 
--- hl.monitor({
---     output   = "DP-4",
---     mode     = "1920x1200@59.95",
---     position = "1920x0",
---     scale    = 1,
---     transform = 1,
--- })
+-- Grad office dual-monitor layout. Declared statically so Hyprland applies it
+-- automatically whenever these specific monitors connect -- the clamshell
+-- scripts never touch external monitor enable/disable/position, only eDP-1.
+hl.monitor({
+    output   = "desc:Ancor Communications Inc VS24A E6LMQS098584",
+    mode     = "preferred",
+    position = "0x0",
+    scale    = 1,
+})
 
+hl.monitor({
+    output    = "desc:Dell Inc. DELL U2412M M2GCR24R314L",
+    mode      = "preferred",
+    position  = "1920x0",
+    scale     = 1,
+    transform = 1,
+})
+
+hl.monitor({
+    output   = "HDMI-A-1",
+    mode     = "preferred",
+    position = "0x0",
+    scale    = 1,
+})
+
+-- hl.monitor({
+--     output   = "",
+--     mode     = "preferred",
+--     position = "auto",
+--     scale    = "auto",
+-- })
 
 --[[ MY PROGRAMS  ]]
 
@@ -30,6 +46,7 @@ local fileManager = "thunar"
 local menu = "pidof rofi || rofi -show drun"
 local screenshot_slurp = "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date '+%y-%m-%d_%H-%M-%S').png\""
 local screenshot_satty = 'grim - | satty -f - --copy-command wl-copy -o "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png"'
+local my_colors = require "colors"
 
 --[[ AUTOSTART  ]]
 
@@ -55,6 +72,10 @@ end)
 hl.env("XCURSOR_SIZE","24")
 hl.env("HYPRCURSOR_SIZE","24")
 
+-- For NVidia card:
+hl.env("LIBVA_DRIVER_NAME", "nvidia")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+
 --[[ PERMISSIONS  ]]
 
 -- See https://wiki.hypr.land/Configuring/Permissions/
@@ -79,49 +100,58 @@ hl.permission("/usr/(bin|local/bin)/hyprpm", "plugin", "allow")
 -- https://wiki.hypr.land/Configuring/Variables/#general
 hl.config({
   general = {
-      gaps_in = 3,
-      gaps_out = 6,
+    gaps_in = 3,
+    gaps_out = 6,
 
-      border_size = 3,
+    border_size = 3,
 
-      -- https://wiki.hypr.land/Configuring/Variables/#variable-types for info about colors
-      col = {
-        active_border   = { colors = {"rgba(dc39e499)", "rgba(db78d3ff)"}, angle = 45 },
-        inactive_border = { colors = {"rgba(0c0015ff)", "rgba(dc39e444)"}, angle = 45 },
+    -- https://wiki.hypr.land/Configuring/Variables/#variable-types 
+    -- for info about colors
+    col = {
+      active_border   = {
+        colors = {
+          string.format("%s", my_colors.primary),
+          string.format("%s", my_colors.inverse_primary),
+        },
+        angle = 90
       },
+      inactive_border = {
+        colors = {
+          string.format("%s", my_colors.surface),
+          string.format("%s", my_colors.surface_bright),
+        },
+        angle = 45
+      },
+    },
 
-      -- Set to true enable resizing windows by clicking and dragging on borders and gaps
-      resize_on_border = true,
-
-      -- Please see https://wiki.hypr.land/Configuring/Tearing/ before you turn this on
-      allow_tearing = false,
-
-      layout = "dwindle",
+    resize_on_border = true,
+    allow_tearing = false,
+    layout = "dwindle",
   },
 
   -- https://wiki.hypr.land/Configuring/Variables/#decoration
   decoration = {
-      rounding = 15,
-      rounding_power = 2,
+    rounding = 15,
+    rounding_power = 2,
 
-      -- Change transparency of focused and unfocused windows
-      active_opacity = 1.0,
-      inactive_opacity = 0.85,
+    -- Change transparency of focused and unfocused windows
+    active_opacity = 1.0,
+    inactive_opacity = 0.85,
 
-      shadow = {
-          enabled = true,
-          range = 4,
-          render_power = 3,
-          color = 0x1a1a1aee,
-      },
+    shadow = {
+      enabled = true,
+      range = 4,
+      render_power = 3,
+      color = 0x1a1a1aee,
+    },
 
-      -- https://wiki.hypr.land/Configuring/Variables/#blur
-      blur = {
-          enabled = false,
-          size = 3,
-          passes = 1,
-          vibrancy = 0.1696,
-      },
+    -- https://wiki.hypr.land/Configuring/Variables/#blur
+    blur = {
+      enabled = false,
+      size = 3,
+      passes = 1,
+      vibrancy = 0.1696,
+    },
   },
 
   animations = {
@@ -307,12 +337,16 @@ local suppressMaximizeRule = hl.window_rule({
   suppress_event = "maximize",
 })
 
--- hl.workspace_rule({ workspace="1", monitor = "DP-3" , default = true })
--- hl.workspace_rule({ workspace="2", monitor = "eDP-1", default = true })
--- hl.workspace_rule({ workspace="3", monitor = "eDP-1", default = true })
--- hl.workspace_rule({ workspace="6", monitor = "DP-4" , default = true })
--- hl.workspace_rule({ workspace="7", monitor = "DP-4" , default = true })
--- hl.workspace_rule({ workspace="8", monitor = "DP-4" , default = true })
+hl.workspace_rule({ workspace=1,  monitor = "desc:Ancor Communications Inc VS24A E6LMQS098584"})
+hl.workspace_rule({ workspace=2,  monitor = "desc:Ancor Communications Inc VS24A E6LMQS098584"})
+hl.workspace_rule({ workspace=3,  monitor = "desc:Ancor Communications Inc VS24A E6LMQS098584"})
+hl.workspace_rule({ workspace=4,  monitor = "desc:Ancor Communications Inc VS24A E6LMQS098584"})
+hl.workspace_rule({ workspace=5,  monitor = "desc:Ancor Communications Inc VS24A E6LMQS098584"})
+hl.workspace_rule({ workspace=6,  monitor = "desc:Dell Inc. DELL U2412M M2GCR24R314L"})
+hl.workspace_rule({ workspace=7,  monitor = "desc:Dell Inc. DELL U2412M M2GCR24R314L"})
+hl.workspace_rule({ workspace=8,  monitor = "desc:Dell Inc. DELL U2412M M2GCR24R314L"})
+hl.workspace_rule({ workspace=9,  monitor = "desc:Dell Inc. DELL U2412M M2GCR24R314L"})
+hl.workspace_rule({ workspace=10, monitor = "desc:Dell Inc. DELL U2412M M2GCR24R314L"})
 
 -- Fix some dragging issues with XWayland
 hl.window_rule({
